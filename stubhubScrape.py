@@ -8,7 +8,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import email
 import pandas as pd
-import time
 import csv
 from datetime import datetime
 import argparse
@@ -50,8 +49,5 @@ def main():
         
         # Append the data
         writer.writerow([current_time, first_price])
-    
-    # if first_price == args.targetPrice:
-    #     email.sendEmail(first_price)
 if __name__ == "__main__":
     main()
