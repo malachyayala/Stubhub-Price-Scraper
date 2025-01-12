@@ -1,0 +1,13 @@
+import yagmail
+
+def sendEmail(first_price):
+    yag = yagmail.SMTP('malachy.ayala@gmail.com', 'fqqu mozd myzo ajut')
+
+    # Send the email
+    yag.send(
+        to='ayala.ma@northeastern.edu',
+        subject='test',
+        contents=f'First print found: {first_price}'
+    )
+
+    print("Email sent successfully!")
