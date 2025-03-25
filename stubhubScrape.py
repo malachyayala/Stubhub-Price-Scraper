@@ -26,7 +26,6 @@ def setup_driver():
     options.add_argument("--log-level=3")  # Reduce logging verbosity
     return webdriver.Chrome(service=service, options=options)
 
-
 def extract_price(driver, url):
     """Clicks a button before extracting the price from a specific XPath on the webpage."""
     try:
@@ -70,9 +69,6 @@ def extract_price(driver, url):
         print(f"Error extracting price from {url}: {e}")
         return None
 
-
-
-
 def save_price_to_csv(url, price):
     """Appends price and timestamp to a CSV file."""
     file_path = Path("prices.csv")
@@ -91,7 +87,6 @@ def save_price_to_csv(url, price):
             'URL': url
         })
 
-
 def process_url(url):
     """Processes a single URL by extracting its price and saving it."""
     driver = setup_driver()
@@ -105,7 +100,6 @@ def process_url(url):
             print(f"❌ No price found for {url}.")
     finally:
         driver.quit()
-
 
 def main():
     parser = argparse.ArgumentParser(description="Price Tracker for Multiple URLs")
