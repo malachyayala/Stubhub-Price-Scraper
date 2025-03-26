@@ -88,7 +88,7 @@ def extract_event_details(driver, url):
 
 def save_price_to_csv(url, event_title, event_location, price):
     """Appends event title, location, price, and timestamp to a CSV file."""
-    file_path = Path("/Users/cr7/Desktop/scripts/stubhubScraper/prices.csv")  # Use absolute path
+    file_path = Path("/Users/cr7/Desktop/scripts/stubhubScraper/pricesHistory.csv")  # Use absolute path
     write_header = not file_path.exists()
 
     with file_path.open(mode='a', newline='') as file:
@@ -106,8 +106,34 @@ def save_price_to_csv(url, event_title, event_location, price):
             'URL': url
         })
 
+def update_csv(csv_file, scraped_data, csv_rows):
+    """Updates an existing CSV file with scraped event info without overwriting other rows."""
+    file_path = Path(csv_file)
+    if not file_path.exists():
+        print(f"CSV file {csv_file} not found.")
+        return
+
+    updated_rows = []
+    for row in csv_rows:
+        for data in scraped_data:
+            if row["URL"] == data["URL"]:
+                row['Time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                row["Event Title"] = data["Event Title"]
+                row["Location"] = data["Location"]
+                row["Price"] = data["Price"]
+        updated_rows.append(row)
+
+    # Write the updated data back to the CSV
+    with file_path.open("w", newline='') as file:
+        fieldnames = ["Time", "Event Title", "Location", "Price", "URL"]
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(updated_rows)
+    
+    print(f"✅ CSV file {csv_file} updated successfully.")
+
 def process_url(url):
-    """Processes a single URL by extracting event title, location, and price, then saving them."""
+    """Processes a single URL by extracting event title, location, and price, then saving/updating CSV."""
     driver = setup_driver()
     
     try:
@@ -117,6 +143,7 @@ def process_url(url):
             save_price_to_csv(url, event_title, event_location, price)
         else:
             print(f"❌ No price found for {event_title} at {event_location}.")
+        return {"URL": url, "Event Title": event_title, "Location": event_location, "Price": price or "N/A"}
     finally:
         driver.quit()
 
@@ -124,24 +151,43 @@ def main():
     parser = argparse.ArgumentParser(description="Price Tracker for Multiple URLs")
     parser.add_argument("links", nargs="*", help="One or more URLs to scrape")
     parser.add_argument("--file", type=str, help="Path to a file containing URLs (one per line)")
+    parser.add_argument("--csv", type=str, help="Path to a CSV file containing URLs in the 'URL' column")
 
     args = parser.parse_args()
 
-    # Read URLs from file if provided
     urls = args.links
+
+    # Read from a TXT file
     if args.file:
         file_path = Path(args.file)
         if file_path.exists():
             with file_path.open("r") as f:
                 urls.extend(line.strip() for line in f.readlines() if line.strip())
 
+    # Read from a CSV file
+    csv_rows = []
+    if args.csv:
+        csv_path = Path(args.csv)
+        if csv_path.exists():
+            with csv_path.open("r", newline='') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    if row.get("URL"):  # Ensure the URL column exists
+                        urls.append(row["URL"].strip())
+                        csv_rows.append(row)  # Store full row for updating later
+
     if not urls:
         print("No URLs provided. Please specify at least one URL.")
         return
 
-    # Run scraping tasks in parallel for efficiency
+    # Process URLs in parallel
     with ThreadPoolExecutor(max_workers=5) as executor:
-        executor.map(process_url, urls)
+        results = executor.map(process_url, urls)
+
+    # If using a CSV, update it with new data
+    if args.csv:
+        update_csv(args.csv, list(results), csv_rows)
+
 
 if __name__ == "__main__":
     main()
