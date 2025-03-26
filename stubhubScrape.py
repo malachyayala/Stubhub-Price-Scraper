@@ -26,7 +26,7 @@ def setup_driver():
     return webdriver.Chrome(service=service, options=options)
 
 def extract_event_details(driver, url):
-    """Extracts the event title, location, and price from the webpage."""
+    """Extracts the event title, date, location, and price from the webpage."""
     try:
         driver.get(url)
 
@@ -40,6 +40,17 @@ def extract_event_details(driver, url):
         except TimeoutException:
             print(f"⚠️ Event title not found on {url}")
             event_title = "N/A"
+
+        # Extract event date
+        try:
+            event_date_element = WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="event-detail-header"]/div/div/div[1]/div[2]/div/div/div[1]/div/span'))
+            )
+            event_date = event_date_element.text.strip()
+            print(f"📅 Event Date: {event_date}")
+        except TimeoutException:
+            print(f"⚠️ Event date not found on {url}")
+            event_date = "N/A"
 
         # Extract event location
         try:
@@ -74,7 +85,18 @@ def extract_event_details(driver, url):
         match = re.search(price_pattern, page_text)
         price = match.group(0) if match else None
 
-        return event_title, event_location, price
+        return event_title, event_date, event_location, price
+
+    except TimeoutException:
+        print(f"Timeout while extracting details from {url}")
+        return "N/A", "N/A", "N/A", None
+    except NoSuchElementException:
+        print(f"Price element not found on {url}")
+        return "N/A", "N/A", "N/A", None
+    except Exception as e:
+        print(f"Error extracting details from {url}: {e}")
+        return "N/A", "N/A", "N/A", None
+
 
     except TimeoutException:
         print(f"Timeout while extracting details from {url}")
@@ -86,28 +108,29 @@ def extract_event_details(driver, url):
         print(f"Error extracting details from {url}: {e}")
         return "N/A", "N/A", None
 
-def save_price_to_csv(url, event_title, event_location, price):
-    """Appends event title, location, price, and timestamp to a CSV file."""
+def save_price_to_csv(url, event_title, event_date, event_location, price):
+    """Appends event details including the date to a CSV file."""
     file_path = Path("/Users/cr7/Desktop/scripts/stubhubScraper/pricesHistory.csv")  # Use absolute path
     write_header = not file_path.exists()
 
-    with file_path.open(mode='a', newline='') as file:
-        fieldnames = ['Time', 'Event Title', 'Location', 'Price', 'URL']
+    with file_path.open("a", newline='') as file:
+        fieldnames = ["Time", "Event Title", "Date", "Location", "Price", "URL"]
         writer = csv.DictWriter(file, fieldnames=fieldnames)
 
         if write_header:
             writer.writeheader()
         
         writer.writerow({
-            'Time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'Event Title': event_title,
-            'Location': event_location,
-            'Price': price or "N/A",
-            'URL': url
+            "Time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "Event Title": event_title,
+            "Date": event_date,
+            "Location": event_location,
+            "Price": price or "N/A",
+            "URL": url
         })
 
 def update_csv(csv_file, scraped_data, csv_rows):
-    """Updates an existing CSV file with scraped event info without overwriting other rows."""
+    """Updates an existing CSV file with new event data while preserving other rows."""
     file_path = Path(csv_file)
     if not file_path.exists():
         print(f"CSV file {csv_file} not found.")
@@ -117,15 +140,16 @@ def update_csv(csv_file, scraped_data, csv_rows):
     for row in csv_rows:
         for data in scraped_data:
             if row["URL"] == data["URL"]:
-                row['Time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                row['Time'] = datetime.now().strftime('%m/%d/%Y %H:%M:%S')
                 row["Event Title"] = data["Event Title"]
+                row["Date"] = data["Date"]
                 row["Location"] = data["Location"]
                 row["Price"] = data["Price"]
         updated_rows.append(row)
 
     # Write the updated data back to the CSV
     with file_path.open("w", newline='') as file:
-        fieldnames = ["Time", "Event Title", "Location", "Price", "URL"]
+        fieldnames = ["Time", "Event Title", "Date", "Location", "Price", "URL"]
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(updated_rows)
@@ -133,17 +157,17 @@ def update_csv(csv_file, scraped_data, csv_rows):
     print(f"✅ CSV file {csv_file} updated successfully.")
 
 def process_url(url):
-    """Processes a single URL by extracting event title, location, and price, then saving/updating CSV."""
+    """Processes a single URL by extracting event details and updating/saving them."""
     driver = setup_driver()
     
     try:
-        event_title, event_location, price = extract_event_details(driver, url)
+        event_title, event_date, event_location, price = extract_event_details(driver, url)
         if price:
-            print(f"✅ Price found for {event_title} at {event_location}: {price}")
-            save_price_to_csv(url, event_title, event_location, price)
+            print(f"✅ Price found for {event_title} on {event_date} at {event_location}: {price}")
+            save_price_to_csv(url, event_title, event_date, event_location, price)
         else:
-            print(f"❌ No price found for {event_title} at {event_location}.")
-        return {"URL": url, "Event Title": event_title, "Location": event_location, "Price": price or "N/A"}
+            print(f"❌ No price found for {event_title} on {event_date} at {event_location}.")
+        return {"URL": url, "Event Title": event_title, "Date": event_date, "Location": event_location, "Price": price or "N/A"}
     finally:
         driver.quit()
 
