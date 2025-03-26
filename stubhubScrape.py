@@ -188,6 +188,5 @@ def main():
     if args.csv:
         update_csv(args.csv, list(results), csv_rows)
 
-
 if __name__ == "__main__":
     main()
