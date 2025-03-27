@@ -27,10 +27,12 @@ def setup_driver():
 
 def extract_event_details(driver, url):
     """Extracts the event title, date, location, and price from the webpage."""
+    event_title, event_date, event_location, price = "N/A", "N/A", "N/A", None  # Initialize variables
+
     try:
         driver.get(url)
 
-        # Extract event title
+        # --- Extract event title ---
         try:
             event_title_element = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="event-detail-header"]/div/div/div[1]/div[2]/a/h6'))
@@ -39,9 +41,9 @@ def extract_event_details(driver, url):
             print(f"🎟️ Event Title: {event_title}")
         except TimeoutException:
             print(f"⚠️ Event title not found on {url}")
-            event_title = "N/A"
+            # event_title remains "N/A"
 
-        # Extract event date
+        # --- Extract event date ---
         try:
             event_date_element = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="event-detail-header"]/div/div/div[1]/div[2]/div/div/div[1]/div/span'))
@@ -50,9 +52,9 @@ def extract_event_details(driver, url):
             print(f"📅 Event Date: {event_date}")
         except TimeoutException:
             print(f"⚠️ Event date not found on {url}")
-            event_date = "N/A"
+            # event_date remains "N/A"
 
-        # Extract event location
+        # --- Extract event location ---
         try:
             location_element = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[1]/div/div/div[1]/div[2]/div/div/div[2]/button'))
@@ -61,40 +63,81 @@ def extract_event_details(driver, url):
             print(f"📍 Event Location: {event_location}")
         except TimeoutException:
             print(f"⚠️ Event location not found on {url}")
-            event_location = "N/A"
+            # event_location remains "N/A"
 
-        # Attempt to click button (if necessary)
+        # --- Attempt to click the modal button (if necessary) ---
+        # Use a shorter timeout (e.g., 2-3 seconds) as we don't want to wait long if it's irrelevant
+        short_wait = 3
         try:
-            button = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="modal-root"]/div/div/div/div[2]/div[3]/button'))
+            # More robust selector for a button within the modal, if possible
+            # Example: Look for a button with specific text or data attribute
+            # If the XPath remains the only option:
+            button_xpath = '//*[@id="modal-root"]/div/div/div/div[2]/div[3]/button'
+
+            # Wait briefly for the button to be present and clickable
+            button = WebDriverWait(driver, short_wait).until(
+                EC.element_to_be_clickable((By.XPATH, button_xpath))
             )
             button.click()
-            print(f"✅ Clicked the button on {url}")
+            print(f"✅ Clicked a potential modal button on {url}")
+            # Instead of time.sleep(), maybe wait for the button to disappear?
+            # Or better yet, rely on the subsequent wait for the price element.
+            # Optional: Wait for invisibility if the button should disappear after click
+            # try:
+            #    WebDriverWait(driver, 5).until(
+            #        EC.invisibility_of_element_located((By.XPATH, button_xpath))
+            #    )
+            #    print(f"✅ Modal button disappeared after click on {url}")
+            # except TimeoutException:
+            #    print(f"⚠️ Modal button did not disappear after click on {url}")
+
         except TimeoutException:
-            print(f"⚠️ Button not found or not clickable on {url}. Continuing without clicking.")
+            # Button not found/clickable within the short timeout. This is often OK.
+            print(f"ℹ️ Modal button ({button_xpath}) not found or not clickable within {short_wait}s on {url}. Continuing...")
+        except Exception as e:
+            # Catch other potential exceptions during click, like ElementClickInterceptedException
+            print(f"⚠️ Error interacting with modal button on {url}: {e}. Continuing...")
 
-        # Extract price
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, '//*[@id="listings-container"]/div[1]/div'))
-        )
-        element = driver.find_element(By.XPATH, '//*[@id="listings-container"]/div[1]/div')
-        page_text = element.text.strip()
+        # --- Extract price ---
+        # Now, wait for the actual price element. This wait handles page loading
+        # regardless of whether the button was clicked or not.
+        try:
+            # Use a more robust locator for the price if possible!
+            price_container_xpath = '//*[@id="listings-container"]/div[1]/div'
+            # Wait up to 10 seconds for the element containing price info
+            price_element_container = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, price_container_xpath))
+            )
+            page_text = price_element_container.text.strip()
 
-        price_pattern = r'\$\d{1,3}(?:,\d{3})*(?:\.\d{2})?'
-        match = re.search(price_pattern, page_text)
-        price = match.group(0) if match else None
+            # Use regex to find the first price pattern
+            price_pattern = r'\$\d{1,3}(?:,\d{3})*(?:\.\d{2})?'
+            match = re.search(price_pattern, page_text)
+            if match:
+                price = match.group(0)
+                print(f"💰 Price Found: {price}")
+            else:
+                print(f"⚠️ Price pattern not found in container text on {url}")
+                # price remains None
 
+        except TimeoutException:
+            print(f"❌ Price container ({price_container_xpath}) not found after waiting on {url}")
+            # price remains None
+        except Exception as e:
+            print(f"❌ Error extracting price on {url}: {e}")
+            # price remains None
+
+        # Return all collected details
         return event_title, event_date, event_location, price
 
-    except TimeoutException:
-        print(f"Timeout while extracting details from {url}")
-        return "N/A", "N/A", "N/A", None
-    except NoSuchElementException:
-        print(f"Price element not found on {url}")
-        return "N/A", "N/A", "N/A", None
     except Exception as e:
-        print(f"Error extracting details from {url}: {e}")
+        print(f"SEVERE: An unexpected error occurred processing {url}: {e}")
+        # Return default values in case of a major failure early on
         return "N/A", "N/A", "N/A", None
+
+    # REMOVE the redundant except blocks that were previously at the end here.
+    # The final return is handled within the main try block,
+    # and the outer except Exception catches broader issues.
 
 def save_price_to_csv(url, event_title, event_date, event_location, price):
     """Appends event details including the date to a CSV file."""
