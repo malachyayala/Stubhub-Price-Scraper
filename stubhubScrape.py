@@ -70,7 +70,6 @@ def extract_event_details(driver, url):
             )
             button.click()
             print(f"✅ Clicked the button on {url}")
-            time.sleep(5)  # Allow modal content to load
         except TimeoutException:
             print(f"⚠️ Button not found or not clickable on {url}. Continuing without clicking.")
 
@@ -96,17 +95,6 @@ def extract_event_details(driver, url):
     except Exception as e:
         print(f"Error extracting details from {url}: {e}")
         return "N/A", "N/A", "N/A", None
-
-
-    except TimeoutException:
-        print(f"Timeout while extracting details from {url}")
-        return "N/A", "N/A", None
-    except NoSuchElementException:
-        print(f"Price element not found on {url}")
-        return "N/A", "N/A", None
-    except Exception as e:
-        print(f"Error extracting details from {url}: {e}")
-        return "N/A", "N/A", None
 
 def save_price_to_csv(url, event_title, event_date, event_location, price):
     """Appends event details including the date to a CSV file."""
