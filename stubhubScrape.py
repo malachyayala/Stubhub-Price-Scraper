@@ -137,37 +137,81 @@ def save_price_to_csv(url, event_title, event_date, event_location, price):
             "URL": url
         })
 
-def update_csv(csv_file, scraped_data, csv_rows):
-    """Updates an existing CSV file with new event data while preserving other rows."""
+def update_csv(csv_file, scraped_data, csv_rows, prices_history_file):
+    """Updates an existing CSV file with new event data, including the all-time low price,
+       while preserving other rows.
+    """
     file_path = Path(csv_file)
     if not file_path.exists():
         print(f"CSV file {csv_file} not found.")
         return
 
+    all_time_lows = get_all_time_lows(prices_history_file)
+
     updated_rows = []
     for row in csv_rows:
+        url = row["URL"]
+        # Update with scraped data
         for data in scraped_data:
-            if row["URL"] == data["URL"]:
+            if url == data["URL"]:
                 row['Time'] = datetime.now().strftime('%m/%d/%Y %H:%M:%S')
                 row["Event Title"] = data["Event Title"]
                 row["Date"] = data["Date"]
                 row["Location"] = data["Location"]
                 row["Price"] = data["Price"]
+
+        # Update all-time low price
+        if url in all_time_lows:
+            row["All Time Low Price"] = all_time_lows[url]  # Add the all-time low to the row
+        else:
+            row["All Time Low Price"] = "N/A"  # Or some default if not found
+
         updated_rows.append(row)
 
     # Write the updated data back to the CSV
     with file_path.open("w", newline='') as file:
-        fieldnames = ["Time", "Event Title", "Date", "Location", "Price", "URL"]
+        fieldnames = ["Time", "Event Title", "Date", "Location", "Price", "URL", "All Time Low Price"] # Add new field
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(updated_rows)
-    
+
     print(f"✅ CSV file {csv_file} updated successfully.")
 
+def get_all_time_lows(prices_history_file):
+    """
+    Reads the pricesHistory.csv file and returns a dictionary of all-time low prices
+    for each URL.
+    """
+    all_time_lows = {}
+    file_path = Path(prices_history_file)
+
+    if not file_path.exists():
+        print(f"Prices history file {prices_history_file} not found.")
+        return all_time_lows  # Return empty dict
+
+    with file_path.open("r", newline='') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            try:
+                url = row["URL"]
+                price = row["Price"]
+                if price and price != "N/A":
+                    # Remove the dollar sign and convert to float
+                    price = float(price.replace('$', '').replace(',', ''))
+                    if url not in all_time_lows or price < all_time_lows[url]:
+                        all_time_lows[url] = price
+            except ValueError:
+                print(f"Warning: Could not parse price '{row['Price']}' in {prices_history_file}")
+                continue
+            except KeyError as e:
+                 print(f"KeyError: {e} - Check if your CSV has the correct headers.")
+                 continue
+    return all_time_lows
+
 def process_url(url):
-    """Processes a single URL by extracting event details and updating/saving them."""
+    """Processes a single URL by extracting event details."""
     driver = setup_driver()
-    
+
     try:
         event_title, event_date, event_location, price = extract_event_details(driver, url)
         if price:
@@ -183,7 +227,8 @@ def main():
     parser = argparse.ArgumentParser(description="Price Tracker for Multiple URLs")
     parser.add_argument("links", nargs="*", help="One or more URLs to scrape")
     parser.add_argument("--file", type=str, help="Path to a file containing URLs (one per line)")
-    parser.add_argument("--csv", type=str, help="Path to a CSV file containing URLs in the 'URL' column")
+    parser.add_argument("--csv", type=str, help="Path to a CSV file containing URLs in the 'URL' column (pricesSheet.csv)")
+    parser.add_argument("--history", type=str, default="/Users/cr7/Desktop/scripts/stubhubScraper/pricesHistory.csv", help="Path to the price history CSV (pricesHistory.csv)")
 
     args = parser.parse_args()
 
@@ -218,7 +263,7 @@ def main():
 
     # If using a CSV, update it with new data
     if args.csv:
-        update_csv(args.csv, list(results), csv_rows)
+        update_csv(args.csv, list(results), csv_rows, args.history) # Pass history file path
 
     # Display the total runtime
     end_time = time.time()
