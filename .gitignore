@@ -2,3 +2,4 @@ email.utils
 pricesHistory.csv
 pricesSheet.csv
 chromedriver
+cron.log
