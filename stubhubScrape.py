@@ -61,7 +61,7 @@ def setup_driver():
     try:
         service = Service(ChromeDriverManager().install())
         options = webdriver.ChromeOptions()
-        # options.add_argument("--headless")
+        options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--log-level=3")
@@ -225,8 +225,6 @@ def extract_event_details(driver, url):
         logging.critical(f"SEVERE: An unexpected error occurred processing {url}: {e}", exc_info=True)
         return "N/A", "N/A", "N/A", None
 
-
-
 # --- save_price_to_csv function (Keep as is) ---
 def save_price_to_csv(url, event_title, event_date, event_location, price, history_file_path):
     """Appends event details including the date to the history CSV file."""
@@ -251,7 +249,6 @@ def save_price_to_csv(url, event_title, event_date, event_location, price, histo
         logging.error(f"Failed to write to history CSV {history_file_path}: {e}")
     except Exception as e:
         logging.error(f"Unexpected error saving to history CSV {history_file_path}: {e}")
-
 
 # --- update_csv function (Keep as is) ---
 def update_csv(csv_file, scraped_data, csv_rows, prices_history_file):
@@ -430,9 +427,9 @@ def main():
     parser.add_argument("links", nargs="*", help="One or more StubHub event URLs to scrape")
     parser.add_argument("--file", type=str, help="Path to a TXT file containing URLs (one per line)")
     parser.add_argument("--csv", type=str, help="Path to the main CSV file to update (e.g., pricesSheet.csv)")
-    parser.add_argument("--history", type=str, default="/Users/cr7/Desktop/scripts/stubhubScraper/pricesHistory.csv", help="Path to the price history CSV (pricesHistory.csv)")
+    parser.add_argument("--history", type=str, default="/Users/malachyayala/Desktop/scripts/stubhubScraper/pricesHistory.csv", help="Path to the price history CSV (pricesHistory.csv)")
     # Consider keeping default workers low (2 or 3) due to resource intensity
-    parser.add_argument("--workers", type=int, default=2, help="Number of parallel threads (default: 2)")
+    parser.add_argument("--workers", type=int, default=4, help="Number of parallel threads (default: 4)")
 
     args = parser.parse_args()
     urls_to_process = set() # Initialize empty set
