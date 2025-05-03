@@ -69,7 +69,7 @@ def setup_driver():
 
         # Use FirefoxOptions
         options = FirefoxOptions()
-        options.add_argument("--headless")
+        #options.add_argument("--headless")
 
         # --- START SPEED OPTIMIZATIONS ---
 
