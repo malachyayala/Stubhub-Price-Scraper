@@ -64,7 +64,7 @@ def setup_driver():
     """Sets up the Firefox WebDriver."""
     try:
         # Provide the direct path to your downloaded geckodriver
-        geckodriver_path = "/usr/local/bin/geckodriver" # <--- CHANGE THIS
+        geckodriver_path = "/home/cr7/Documents/Scripts/drivers/geckodriver" # <--- CHANGE THIS
         service = FirefoxService(executable_path=geckodriver_path)
 
         # Use FirefoxOptions
