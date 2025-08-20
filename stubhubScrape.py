@@ -254,30 +254,33 @@ def extract_event_details(driver, url):
         return "N/A", "N/A", "N/A", None
 
 
-# --- save_price_to_csv function (UNCHANGED) ---
+# --- save_price_to_csv function (MODIFIED) ---
 def save_price_to_csv(url, event_title, event_date, event_location, price, history_file_path):
-    """Appends event details including the date to the history CSV file."""
-    file_path = Path(history_file_path)
-    write_header = not file_path.exists() or file_path.stat().st_size == 0
-    try:
-        with file_path.open("a", newline='', encoding='utf-8') as file:
-            fieldnames = ["Time", "Event Title", "Date", "Location", "Price", "URL"]
-            writer = csv.DictWriter(file, fieldnames=fieldnames)
-            if write_header:
-                writer.writeheader()
-            writer.writerow({
-                "Time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "Event Title": event_title,
-                "Date": event_date,
-                "Location": event_location,
-                "Price": price if price is not None else "N/A",
-                "URL": url
-            })
-        # Removed redundant logging here, main loop logs success/failure
-    except IOError as e:
-        logging.error(f"Failed to write to history CSV {history_file_path}: {e}")
-    except Exception as e:
-        logging.error(f"Unexpected error saving to history CSV {history_file_path}: {e}")
+    """Save price data to history CSV file with proper formatting"""
+    import csv
+    from pathlib import Path
+
+    # Define headers
+    headers = ['Time', 'Event Title', 'Date', 'Location', 'Price', 'URL']
+    
+    # Create file with headers if it doesn't exist
+    history_path = Path(history_file_path)
+    if not history_path.exists():
+        with open(history_path, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(headers)
+    
+    # Append new data with newline
+    with open(history_path, 'a', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            event_title,
+            event_date,
+            event_location,
+            price,
+            url
+        ])
 
 # --- update_csv function (UNCHANGED) ---
 def update_csv(csv_file, scraped_data, csv_rows, prices_history_file):

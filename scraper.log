@@ -1,0 +1,74 @@
+2025-08-20 14:45:01,617 - INFO - Loaded 1 new unique URLs from pricesSheet.csv. Total URLs to process: 1
+2025-08-20 14:45:01,617 - INFO - Using history file: /home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/pricesHistory.csv
+2025-08-20 14:45:01,618 - INFO - Ensuring GeckoDriver is cached by webdriver-manager...
+2025-08-20 14:45:01,618 - INFO - GeckoDriver cache checked/updated.
+2025-08-20 14:45:01,618 - INFO - Processing 1 unique URLs with 3 workers...
+2025-08-20 14:45:01,618 - INFO - Setting up Firefox WebDriver...
+2025-08-20 14:45:03,809 - INFO - Navigating to https://www.stubhub.com/boston-red-sox-boston-tickets-8-29-2025/event/154619792/?quantity=2
+2025-08-20 14:45:04,471 - INFO - Page readyState is complete for https://www.stubhub.com/boston-red-sox-boston-tickets-8-29-2025/event/154619792/?quantity=2
+2025-08-20 14:45:04,471 - INFO - Waiting up to 25s for key element (//*[@id="listings-container"]) to be visible...
+2025-08-20 14:45:05,947 - INFO - Key element (//*[@id="listings-container"]) is visible. Page likely loaded, proceeding with scraping details.
+2025-08-20 14:45:06,219 - INFO - 🎟️ Event Title: Pittsburgh Pirates at Boston Red Sox
+2025-08-20 14:45:06,278 - INFO - 📅 Event Date: Aug 29 • Fri • 7:10PM • 2025
+2025-08-20 14:45:06,376 - INFO - 📍 Event Location: Fenway Park, Boston, Massachusetts, USA
+2025-08-20 14:45:09,448 - INFO - ℹ️ Modal button not found/clickable within 3s on https://www.stubhub.com/boston-red-sox-boston-tickets-8-29-2025/event/154619792/?quantity=2. Continuing...
+2025-08-20 14:45:09,449 - INFO - Waiting up to 20s for price pattern in container //*[@id="listings-container"]/div[1]/div...
+2025-08-20 14:45:09,526 - INFO - 💰 Price Pattern Matched: $88.00
+2025-08-20 14:45:09,527 - INFO - ✅ Price found for 'Pittsburgh Pirates at Boston Red Sox': $88.00
+2025-08-20 14:45:10,428 - INFO - Finished processing URLs. Received 1 results (out of 1 URLs attempted).
+2025-08-20 14:45:10,429 - INFO - Calculated all-time lows for 0 URLs from /home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/pricesHistory.csv
+2025-08-20 14:45:10,429 - INFO - ✅ CSV file pricesSheet.csv updated/created successfully.
+2025-08-20 14:45:10,429 - INFO - ⏱️ Total runtime: 8.81 seconds
+2025-08-20 14:50:01,667 - INFO - Loaded 1 new unique URLs from pricesSheet.csv. Total URLs to process: 1
+2025-08-20 14:50:01,667 - INFO - Using history file: /home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/pricesHistory.csv
+2025-08-20 14:50:01,667 - INFO - Ensuring GeckoDriver is cached by webdriver-manager...
+2025-08-20 14:50:01,667 - INFO - GeckoDriver cache checked/updated.
+2025-08-20 14:50:01,667 - INFO - Processing 1 unique URLs with 3 workers...
+2025-08-20 14:50:01,668 - INFO - Setting up Firefox WebDriver...
+2025-08-20 14:50:03,840 - INFO - Navigating to https://www.stubhub.com/boston-red-sox-boston-tickets-8-29-2025/event/154619792/?quantity=2
+2025-08-20 14:50:06,170 - INFO - Page readyState is complete for https://www.stubhub.com/boston-red-sox-boston-tickets-8-29-2025/event/154619792/?quantity=2
+2025-08-20 14:50:06,170 - INFO - Waiting up to 25s for key element (//*[@id="listings-container"]) to be visible...
+2025-08-20 14:50:06,459 - INFO - Key element (//*[@id="listings-container"]) is visible. Page likely loaded, proceeding with scraping details.
+2025-08-20 14:50:06,592 - INFO - 🎟️ Event Title: Pittsburgh Pirates at Boston Red Sox
+2025-08-20 14:50:06,705 - INFO - 📅 Event Date: Aug 29 • Fri • 7:10PM • 2025
+2025-08-20 14:50:06,730 - INFO - 📍 Event Location: Fenway Park, Boston, Massachusetts, USA
+2025-08-20 14:50:09,808 - INFO - ℹ️ Modal button not found/clickable within 3s on https://www.stubhub.com/boston-red-sox-boston-tickets-8-29-2025/event/154619792/?quantity=2. Continuing...
+2025-08-20 14:50:09,809 - INFO - Waiting up to 20s for price pattern in container //*[@id="listings-container"]/div[1]/div...
+2025-08-20 14:50:09,902 - INFO - 💰 Price Pattern Matched: $113.00
+2025-08-20 14:50:09,902 - INFO - ✅ Price found for 'Pittsburgh Pirates at Boston Red Sox': $113.00
+2025-08-20 14:50:10,920 - INFO - Finished processing URLs. Received 1 results (out of 1 URLs attempted).
+2025-08-20 14:50:10,920 - INFO - Calculated all-time lows for 0 URLs from /home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/pricesHistory.csv
+2025-08-20 14:50:10,920 - INFO - ✅ CSV file pricesSheet.csv updated/created successfully.
+2025-08-20 14:50:10,920 - INFO - ⏱️ Total runtime: 9.25 seconds
+2025-08-20 14:55:02,149 - INFO - Loaded 1 new unique URLs from pricesSheet.csv. Total URLs to process: 1
+2025-08-20 14:55:02,150 - INFO - Using history file: /home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/pricesHistory.csv
+2025-08-20 14:55:02,150 - INFO - Ensuring GeckoDriver is cached by webdriver-manager...
+2025-08-20 14:55:02,150 - INFO - GeckoDriver cache checked/updated.
+2025-08-20 14:55:02,150 - INFO - Processing 1 unique URLs with 3 workers...
+2025-08-20 14:55:02,319 - ERROR - Failed to set up Firefox WebDriver: Message: Process unexpectedly closed with status 1
+
+2025-08-20 14:55:02,319 - ERROR - Critical error processing URL https://www.stubhub.com/boston-red-sox-boston-tickets-8-29-2025/event/154619792/?quantity=2 in process_url: Message: Process unexpectedly closed with status 1
+Traceback (most recent call last):
+  File "/home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/stubhubScrape.py", line 434, in process_url
+    driver = setup_driver()
+             ^^^^^^^^^^^^^^
+  File "/home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/stubhubScrape.py", line 100, in setup_driver
+    return webdriver.Firefox(service=service, options=options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/.venv/lib/python3.12/site-packages/selenium/webdriver/firefox/webdriver.py", line 72, in __init__
+    super().__init__(command_executor=executor, options=options)
+  File "/home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 263, in __init__
+    self.start_session(capabilities)
+  File "/home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 366, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 458, in execute
+    self.error_handler.check_response(response)
+  File "/home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 232, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.WebDriverException: Message: Process unexpectedly closed with status 1
+
+2025-08-20 14:55:02,321 - INFO - Finished processing URLs. Received 1 results (out of 1 URLs attempted).
+2025-08-20 14:55:02,321 - INFO - Calculated all-time lows for 0 URLs from /home/cr7/Documents/Scripts/web-scraping/Stubhub-Price-Scraper/pricesHistory.csv
+2025-08-20 14:55:02,321 - INFO - ✅ CSV file pricesSheet.csv updated/created successfully.
+2025-08-20 14:55:02,321 - INFO - ⏱️ Total runtime: 0.17 seconds
